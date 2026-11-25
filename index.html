@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Digital Tajikistan 2026</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: деловой форум, но живой и технологичный; коротко и чётко
+   IDEA: адрас (икат) — традиционная ткань, чей узор уже «пиксельный»; орнамент → растр
+   PICTURE: пиксельная розетка-знак и полоса-«икат» в шапке; сама программа — главный экран
+   COLOUR and TYPE: ультрамарин #2B3BFF доминанта, шафран #FFC21A акцент (наследие жёлтого), коралл для LIVE; Unbounded + Manrope
+   LAYOUT: одна колонка под телефон, липкие фильтры залов, крупные висячие времена */
+:root{color-scheme:light dark;
+--bg:light-dark(#F4F5FA,#0B0C18);--card:light-dark(#FFFFFF,#14162A);--ink:light-dark(#0E1030,#EEF0FF);
+--mute:light-dark(#5E6385,#9095BE);--line:light-dark(#E1E3F0,#23264A);
+--blue:#2B3BFF;--blue2:light-dark(#2B3BFF,#7F8BFF);--saf:#FFC21A;--live:#FF4D6D;--soft:light-dark(#E9EBFF,#1C2050)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Manrope,system-ui,sans-serif;overflow-x:clip;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--saf);outline-offset:2px;border-radius:8px}
+.hero{background:var(--blue);color:#fff;padding:calc(18px + env(safe-area-inset-top)) 18px 0;position:relative;overflow:hidden}
+.brand{display:flex;gap:14px;align-items:center}
+.brand svg{width:58px;height:58px;flex:none}
+.wm{font:800 19px/1.02 Unbounded,sans-serif;letter-spacing:-.01em}
+.wm small{display:block;font:500 11px/1.3 Manrope,sans-serif;opacity:.8;margin-top:6px;letter-spacing:.02em}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 14px}
+.pill{background:rgba(255,255,255,.14);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:600;white-space:nowrap}
+.pill b{color:var(--saf)}
+.ikat{height:14px;margin:0 -18px;background:
+ repeating-linear-gradient(90deg,var(--saf) 0 10px,transparent 10px 14px,#fff 14px 18px,transparent 18px 30px,var(--live) 30px 34px,transparent 34px 46px);
+ -webkit-mask:repeating-linear-gradient(0deg,#000 0 3px,transparent 3px 4px);mask:repeating-linear-gradient(0deg,#000 0 3px,transparent 3px 4px)}
+.now{margin:14px 14px 0;background:var(--card);border-radius:18px;padding:14px 16px;border:1px solid var(--line);display:none}
+.now.on{display:block}
+.now .lab{font-size:13px;font-weight:700;color:var(--live);display:flex;align-items:center;gap:8px}
+.now .lab i{width:8px;height:8px;border-radius:50%;background:var(--live);animation:p 1.4s infinite}
+@keyframes p{50%{opacity:.25}}
+@media(prefers-reduced-motion:reduce){.now .lab i{animation:none}}
+.now .t{font-weight:700;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.now .s{color:var(--mute);font-size:14px}
+.now .nx{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:14px;color:var(--mute)}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 14px 10px}
+.search{width:100%;font:16px Manrope,sans-serif;padding:11px 14px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.chips{display:flex;gap:8px;margin-top:10px;overflow-x:auto;scrollbar-width:none}
+.chip{flex:none;padding:9px 14px;border-radius:99px;background:var(--card);border:1px solid var(--line);font-size:14px;font-weight:600;min-height:40px}
+.chip[aria-pressed=true]{background:var(--blue);border-color:var(--blue);color:#fff}
+main{padding:0 14px}
+.sess{margin:18px 0 8px;padding:16px;border-radius:18px;background:var(--soft)}
+.sess .h{font-size:12px;font-weight:700;color:var(--blue2);display:flex;justify-content:space-between;gap:8px}
+.sess h2{font:700 16px/1.25 Unbounded,sans-serif;margin:8px 0 8px;text-wrap:balance}
+.sess p{margin:0;font-size:14px;color:var(--mute)}
+.row{display:grid;grid-template-columns:58px minmax(0,1fr) 40px;gap:10px;padding:14px 0;border-bottom:1px solid var(--line);align-items:start}
+.tm{font:700 17px/1.2 Unbounded,sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tm small{display:block;font:500 12px Manrope,sans-serif;color:var(--mute);margin-top:4px}
+.ti{font-weight:700;line-height:1.35}
+.sp{font-size:14px;color:var(--mute);margin-top:4px}
+.sp b{color:var(--ink);font-weight:600}
+.hall{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;margin-top:6px;background:var(--soft);color:var(--blue2)}
+.row.brk .ti{color:var(--mute);font-weight:600}
+.row.live{background:linear-gradient(90deg,rgba(255,77,109,.10),transparent);margin:0 -14px;padding-inline:14px;border-left:3px solid var(--live)}
+.row.past{opacity:.5}
+.row.hl{animation:hl 1.6s}
+@keyframes hl{0%,40%{background:rgba(255,194,26,.3)}}
+.star{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--mute)}
+.star svg{width:22px;height:22px}
+.star[aria-pressed=true]{color:var(--saf)}
+.star[aria-pressed=true] path{fill:var(--saf)}
+.empty{text-align:center;color:var(--mute);padding:48px 20px}
+.empty svg{width:64px;height:64px;opacity:.35;margin-bottom:12px}
+.spk{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);width:100%;text-align:left;align-items:center}
+.av{width:44px;height:44px;border-radius:12px;flex:none;display:grid;place-items:center;font:700 14px Unbounded,sans-serif;color:#fff;background:var(--blue)}
+.spk .r{font-size:13px;color:var(--mute);line-height:1.35}
+.info{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:16px 0}
+.info h3{font:700 15px Unbounded,sans-serif;margin:0 0 8px}
+.info p{margin:4px 0;color:var(--mute);font-size:15px}
+.btn{display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:14px;background:var(--blue);color:#fff;font-weight:700;text-decoration:none;margin-top:12px}
+.btn.alt{background:var(--soft);color:var(--blue2)}
+.stat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px}
+.stat div{background:var(--soft);border-radius:14px;padding:12px}
+.stat b{display:block;font:800 22px Unbounded,sans-serif;color:var(--blue2)}
+.stat span{font-size:12px;color:var(--mute)}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:9;display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+nav button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--mute);padding:6px 0;min-height:52px}
+nav svg{width:22px;height:22px}
+nav button[aria-current=true]{color:var(--blue2)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="brand">
+    <svg viewBox="0 0 15 15" aria-hidden="true"><path fill="#fff" d="M7.12 1.12h.76v.76h-.76zM6.12 2.12h.76v.76h-.76zM7.12 2.12h.76v.76h-.76zM8.12 2.12h.76v.76h-.76zM3.12 3.12h.76v.76h-.76zM4.12 3.12h.76v.76h-.76zM5.12 3.12h.76v.76h-.76zM6.12 3.12h.76v.76h-.76zM8.12 3.12h.76v.76h-.76zM9.12 3.12h.76v.76h-.76zM10.12 3.12h.76v.76h-.76zM11.12 3.12h.76v.76h-.76zM3.12 4.12h.76v.76h-.76zM4.12 4.12h.76v.76h-.76zM5.12 4.12h.76v.76h-.76zM7.12 4.12h.76v.76h-.76zM9.12 4.12h.76v.76h-.76zM10.12 4.12h.76v.76h-.76zM11.12 4.12h.76v.76h-.76zM3.12 5.12h.76v.76h-.76zM4.12 5.12h.76v.76h-.76zM6.12 5.12h.76v.76h-.76zM7.12 5.12h.76v.76h-.76zM8.12 5.12h.76v.76h-.76zM10.12 5.12h.76v.76h-.76zM11.12 5.12h.76v.76h-.76zM2.12 6.12h.76v.76h-.76zM3.12 6.12h.76v.76h-.76zM5.12 6.12h.76v.76h-.76zM6.12 6.12h.76v.76h-.76zM7.12 6.12h.76v.76h-.76zM8.12 6.12h.76v.76h-.76zM9.12 6.12h.76v.76h-.76zM11.12 6.12h.76v.76h-.76zM12.12 6.12h.76v.76h-.76zM1.12 7.12h.76v.76h-.76zM2.12 7.12h.76v.76h-.76zM4.12 7.12h.76v.76h-.76zM5.12 7.12h.76v.76h-.76zM6.12 7.12h.76v.76h-.76zM8.12 7.12h.76v.76h-.76zM9.12 7.12h.76v.76h-.76zM10.12 7.12h.76v.76h-.76zM12.12 7.12h.76v.76h-.76zM13.12 7.12h.76v.76h-.76zM2.12 8.12h.76v.76h-.76zM3.12 8.12h.76v.76h-.76zM5.12 8.12h.76v.76h-.76zM6.12 8.12h.76v.76h-.76zM7.12 8.12h.76v.76h-.76zM8.12 8.12h.76v.76h-.76zM9.12 8.12h.76v.76h-.76zM11.12 8.12h.76v.76h-.76zM12.12 8.12h.76v.76h-.76zM3.12 9.12h.76v.76h-.76zM4.12 9.12h.76v.76h-.76zM6.12 9.12h.76v.76h-.76zM7.12 9.12h.76v.76h-.76zM8.12 9.12h.76v.76h-.76zM10.12 9.12h.76v.76h-.76zM11.12 9.12h.76v.76h-.76zM3.12 10.12h.76v.76h-.76zM4.12 10.12h.76v.76h-.76zM5.12 10.12h.76v.76h-.76zM7.12 10.12h.76v.76h-.76zM9.12 10.12h.76v.76h-.76zM10.12 10.12h.76v.76h-.76zM11.12 10.12h.76v.76h-.76zM3.12 11.12h.76v.76h-.76zM4.12 11.12h.76v.76h-.76zM5.12 11.12h.76v.76h-.76zM6.12 11.12h.76v.76h-.76zM8.12 11.12h.76v.76h-.76zM9.12 11.12h.76v.76h-.76zM10.12 11.12h.76v.76h-.76zM11.12 11.12h.76v.76h-.76zM6.12 12.12h.76v.76h-.76zM7.12 12.12h.76v.76h-.76zM8.12 12.12h.76v.76h-.76zM7.12 13.12h.76v.76h-.76z"/><rect x="7.12" y="7.12" width=".76" height=".76" fill="#FFC21A"/></svg>
+    <div class="wm">DIGITAL<br>TAJIKISTAN<small>Международный ПЛАС-Форум · 2026</small></div>
+  </div>
+  <div class="meta"><span class="pill"><b>26 ноября</b> · 8:00–18:17</span><span class="pill">Нацбиблиотека, Душанбе</span></div>
+  <div class="ikat"></div>
+</header>
+
+<section class="now" id="now" aria-live="polite"></section>
+
+<div id="v-prog">
+  <div class="bar">
+    <input class="search" id="q" type="search" placeholder="Поиск: тема, спикер, компания" autocomplete="off">
+    <div class="chips" id="halls" role="group" aria-label="Зал">
+      <button class="chip" data-h="all" aria-pressed="true">Все залы</button>
+      <button class="chip" data-h="305" aria-pressed="false">Главный зал · 305</button>
+      <button class="chip" data-h="306" aria-pressed="false">Зал заседаний · 306</button>
+    </div>
+  </div>
+  <main id="list"></main>
+</div>
+<main id="v-fav" hidden></main>
+<main id="v-spk" hidden><div class="bar" style="padding-inline:0"><input class="search" id="qs" type="search" placeholder="Найти спикера" autocomplete="off"></div><div id="spklist"></div></main>
+<main id="v-info" hidden>
+  <div class="info"><h3>Форум в цифрах</h3><div class="stat" id="stats"></div></div>
+  <div class="info"><h3>Место</h3><p>Национальная библиотека Таджикистана</p><p>ул. Техрон, 5, Душанбе</p><p>Главный зал — № 305, зал заседаний — № 306</p>
+    <a class="btn" id="map" href="https://yandex.ru/maps/?text=%D0%9D%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F%20%D0%B1%D0%B8%D0%B1%D0%BB%D0%B8%D0%BE%D1%82%D0%B5%D0%BA%D0%B0%20%D0%A2%D0%B0%D0%B4%D0%B6%D0%B8%D0%BA%D0%B8%D1%81%D1%82%D0%B0%D0%BD%D0%B0%20%D0%94%D1%83%D1%88%D0%B0%D0%BD%D0%B1%D0%B5" target="_blank" rel="noopener">Открыть на карте</a></div>
+  <div class="info"><h3>Расписание дня</h3><p>8:00 — регистрация и выставка</p><p>9:30 — открытие</p><p>Кофе-брейки и выставка между сессиями</p><p>18:12 — заключительное слово</p>
+    <button class="btn alt" id="share">Поделиться программой</button></div>
+</main>
+
+<nav aria-label="Разделы">
+  <button data-v="prog" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Программа</button>
+  <button data-v="fav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6L12 16.8 6.6 19.6l1.1-6L3.2 9.4l6.1-.8z"/></svg>Мой план</button>
+  <button data-v="spk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg>Спикеры</button>
+  <button data-v="info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>Инфо</button>
+</nav>
+
+<script>
+{
+const S=[
+ {h:"all",s:[
+  ["8:00",90,"Регистрация, приветственный кофе, осмотр выставки","",1],
+  ["9:30",5,"Открытие Форума","Александр Гризов, председатель Оргкомитета"],
+  ["9:35",5,"Приветственное слово","Хуршед Мирзо, директор, Агентство инноваций и цифровых технологий при Президенте РТ (ожидается подтверждение)"],
+  ["9:40",5,"Приветственное слово","Зиёратшо Гуломзода, заместитель председателя, Национальный банк Таджикистана"],
+  ["9:45",5,"Приветственное слово","Фарходшох Рахмонализода, председатель, Торгово-промышленная палата РТ"]]},
+ {h:"305",n:"Сессия 1",t:"Пленарная сессия. «Таджикистан Today». Развитие цифрового общества, бизнеса и государства. Трансформация банкинга и платёжного бизнеса",at:"9:50",m:"Джахонгир Джалолов, председатель, Ассоциация цифрового развития Таджикистана",s:[
+  ["9:55",8,"IT-Hub Dushanbe: комплексная платформа развития цифровой экосистемы и искусственного интеллекта","Исфандиёр Яздонзода, заместитель директора, Агентство инноваций и цифровых технологий при Президенте РТ"],
+  ["10:03",8,"Приоритеты в области связи. Стратегия развития отрасли связи РТ до 2040 года","Шохназар Холназарзода, заместитель начальника, Служба связи при Правительстве РТ"],
+  ["10:11",8,"Цифровизация частного сектора и электронной коммерции: роль ТПП в развитии бизнеса и привлечении инвестиций","Насимджон Анваров, первый заместитель председателя, Торгово-промышленная палата РТ"],
+  ["10:19",8,"Цифровая трансформация банковского сектора Таджикистана: стратегические приоритеты, инновации и новые возможности","Зиёратшо Гуломзода, заместитель председателя, Национальный банк Таджикистана"],
+  ["10:27",8,"Цифровая трансформация рынка капитала Таджикистана: инвестиции, фондовый рынок и доверие инвесторов","Нигина Абдурахмонзода, директор, Агентство ценных бумаг и специальной регистрации Минфина РТ"],
+  ["10:35",8,"Цифровой профиль без границ: как GovTech и cashless формируют единый финансовый рынок Центральной Азии","Даурен Нисинбаев, председатель правления, Фридом Банк Таджикистан"],
+  ["10:43",8,"Рынок Таджикистана 2026. Роль госрегулирования. Искусственный интеллект и GPU","Хофиз Шахиди, председатель совета директоров, Алиф Капитал; Азизджон Азими, основатель и CEO, zypl.ai"],
+  ["10:51",30,"Дискуссионный блок","",2],
+  ["11:21",60,"Перерыв, кофе-брейк, осмотр выставки","",1]]},
+ {h:"305",n:"Сессия 2",t:"Искусственный интеллект — сегодня и завтра. Платёжный бизнес. Финтех. Инфраструктура обслуживания",at:"12:21",m:"Носир Орипов, зам. главы департамента цифровой трансформации и стратегии, банк Эсхата",s:[
+  ["12:26",8,"От цифровых платежей к финансам на базе ИИ: инновации, доверие и ответственность","Яннос Асхиотис, управляющий партнёр, Pnyx Hill; председатель правления, Revolut Digital Assets Europe; член совета директоров, StoneX Europe"],
+  ["12:34",8,"ИИ 2026: ожидаемые результаты и неожиданные вызовы для банков","Виктор Достов, председатель, АЭД; профессор, РУДН; эксперт по цифровизации (UNDP, IFC, AFI)"],
+  ["12:42",8,"Международные расчёты в новой реальности: возможности для бизнеса","Олег Огиенко, директор по взаимодействию с госорганами и международным связям, A7A5"],
+  ["12:50",8,"Биометрические технологии и компьютерное зрение в ритейле","Адильхан Мукажанов, директор по развитию бизнеса в финсекторе, VisionLabs"],
+  ["12:58",8,"Пока ИИ рисует будущее, BI уже считает экономику вашей ATM-сети","Елена Ахтырская, директор по продажам, IBS Project"],
+  ["13:06",8,"Встроенные финансы как точка роста: собственный финансовый продукт за 72 часа","Сергей Стоянов, коммерческий директор, NS.Cards"],
+  ["13:14",8,"Банкоматы нового поколения «Ресайклинг в РТ» как ключевой сервис для банков и клиентов","Косим Ишанханов, акционер, ATM Альянс в РТ"],
+  ["13:22",30,"Дискуссионный блок","",2],
+  ["13:52",60,"Перерыв, кофе-брейк, осмотр выставки","",1]]},
+ {h:"306",n:"Сессия 2А",t:"E-Commerce без границ: маркетплейсы, платежи и логистика единого цифрового рынка Центральной Азии",at:"12:21",m:"Насима Бахрамова, председатель, Ассоциация электронной коммерции Таджикистана",s:[
+  ["12:26",8,"Цифровая трансформация транспортной отрасли: от электронных госуслуг к единой цифровой транспортной экосистеме","Сухроб Ёкубзода, заместитель министра, Министерство транспорта РТ"],
+  ["12:34",8,"Цифровая интеграция государства и бизнеса: сервисы и перспективы единой экосистемы электронной коммерции","Мерали Бодуршозода, заместитель директора, Агентство инноваций и цифровых технологий при Президенте РТ"],
+  ["12:42",8,"Цифровое налоговое администрирование e-commerce: единый цифровой след и трансграничная интеграция","Аюбджон Солехзода, заместитель председателя, Налоговый комитет при Правительстве РТ"],
+  ["12:50",8,"Трансграничные цифровые платежи: интеграция платёжных систем и единый рынок e-commerce Центральной Азии","Зиёратшо Гуломзода, заместитель председателя, Национальный банк Таджикистана"],
+  ["12:58",8,"Интеграция ASYCUDA и системы «Единое окно»: единый цифровой след в трансграничной e-commerce","Азизуллох Давлатзода, заместитель начальника, Таможенная служба при Правительстве РТ"],
+  ["13:06",8,"Логистика как ключевой фактор развития электронной коммерции","Лариса Кислякова, председатель, Партнёрство по транспорту и логистике в Центральной Азии"],
+  ["13:14",8,"Цифровые транспортные коридоры Центральной Азии: логистика как драйвер e-commerce и интеграции","Мадина Хайрулоева, генеральный директор, Мавсим и К"],
+  ["13:22",8,"Точки роста e-Commerce: интернет, персонализированный шопинг, рост потребностей","Фируз Хасанов, CEO, AVVAL MARKET"],
+  ["13:30",8,"Как ИИ меняет e-Commerce в Таджикистане: от поиска до персонализации","Джоми Эмомов, коммерческий директор, LakLak"],
+  ["13:38",30,"Дискуссионный блок","",2],
+  ["14:08",60,"Перерыв, кофе-брейк, осмотр выставки","",1]]},
+ {h:"305",n:"Сессия 3",t:"Кибербезопасность госинфраструктуры, экономики, банков и общества. Эффективность антифрод-регулирования",at:"14:52",m:"Дилшодбек Ганиев, директор департамента ИТ, Национальный банк Таджикистана",s:[
+  ["14:57",8,"От ИБ к экосистеме кибербезопасности","Артём Калашников, эксперт по кибербезопасности, MBA CDTO; экс-руководитель ФинЦЕРТ Банка России"],
+  ["15:05",8,"Антифрод. Центральная Азия: «Не с белого листа, но по тем же граблям». Проблемы, обзор, решения","Алексей Голенищев, директор департамента противодействия кибермошенничеству, НМПЦ HUMO (Узбекистан)"],
+  ["15:13",8,"От кибербезопасности к кибердипломатии: укрепление доверия между странами","Исмаил Ахмед, CEO и основатель, Yalla Hack (Судан)"],
+  ["15:21",8,"Комплаенс и искусственный интеллект: риски и возможности","Хуррам Ризоев, заместитель руководителя службы комплаенса, Международный Банк Таджикистана"],
+  ["15:29",8,"От идеи до Production: безопасность и прозрачность изменений через автоматизацию разработки","Евгений Герцен, управляющий директор по цифровой трансформации, Отбасы банк"],
+  ["15:37",8,"Безопасность, которую можно проверить: практики для финтеха и его заказчиков","Ислом Сатторов, руководитель команды разработки, zypl.ai"],
+  ["15:45",8,"Кибергигиена как важный фактор защиты граждан и индустрий","Асет Ордабаев, руководитель по работе с госорганами в ЦА и Монголии, Лаборатория Касперского"],
+  ["15:53",8,"Многоэнергетический двухпроекционный интроскоп Гознака: интерпретируемость ИИ в досмотровых системах","Алексей Марков, руководитель офиса взаимодействия с контрагентами, Гознак"],
+  ["16:01",30,"Дискуссионный блок","",2],
+  ["16:31",10,"Технический перерыв","",1]]},
+ {h:"306",n:"Сессия 3А",t:"Финтех и цифровые финансы. Open API, данные и ИИ: кто завтра будет управлять финансовым рынком?",at:"15:08",m:"Зебуннисо Фаттидинова, исполнительный директор, Ассоциация финансовых организаций Таджикистана",s:[
+  ["15:13",8,"Цифровые платежи в Таджикистане: развитие инфраструктуры и новые возможности","Фарзона Хайрова, департамент платёжных систем, Национальный банк Таджикистана"],
+  ["15:21",8,"Тренды в цифровых финансах 2026: децентрализация, стейблкоины и многое другое","Виктор Достов, международный эксперт IFC; председатель, АЭД"],
+  ["15:29",8,"Цифровая трансформация в банке Эсхата — продуктовый подход","Носир Орипов, зам. главы департамента цифровой трансформации и стратегии, банк Эсхата"],
+  ["15:37",8,"Кто завтра будет управлять рынком — банк или API-провайдер?","Ольга Ярыгина, заместитель председателя правления, Банк 131"],
+  ["15:45",8,"Ориёнбонк 2.0","Джахонгир Камаров, руководитель отдела устойчивого перехода и развития инвестиций, Ориёнбонк"],
+  ["15:53",8,"ИИ-агенты в продажах: возможности и вызовы для бизнеса Таджикистана","Мухаммад Абдугафаров, инженер по AI-продуктам, Lookona Labs"],
+  ["16:01",8,"Глобальные платежи без барьеров: новая архитектура","Дилшод Исхоки, член наблюдательного совета, МДО «Пулсар»; PhD в экономике"],
+  ["16:09",30,"Дискуссионный блок","",2],
+  ["16:39",10,"Технический перерыв","",1]]},
+ {h:"305",n:"Сессия 4",t:"Цифровые активы, криптовалюты и цифровые права: какой рынок строит Таджикистан",at:"16:41",m:"Хусрав Султонов, директор, Иннотек",s:[
+  ["16:46",8,"Развитие рынка виртуальных активов в Кыргызской Республике","Айгуль Бакесариева, завотделом лицензирования, Нацагентство по виртуальным активам и блокчейн-технологиям КР"],
+  ["16:54",8,"Эволюция платежей: CBDC и цифровой рубль","Дмитрий Злодив, начальник отдела развития инновационных финтех-сервисов, Банк ПСБ"],
+  ["17:02",8,"Развитие криптоиндустрии в мире. ВЭД в текущей реальности. Практические кейсы","Александр Бражников, исполнительный директор, Российская ассоциация криптоиндустрии, ИИ и блокчейна"],
+  ["17:10",8,"От токенизации к финансированию бизнеса: взгляд CFO на цифровые активы","Дина Шмулей, финансовый директор, ГК Транссервис"],
+  ["17:18",8,"Трансграничные платёжные коридоры в цифровых активах: эффективное движение денег","Наталья Роменская, CEO и основатель, Strategy PLUS Dubai"],
+  ["17:26",8,"Программируемые стейблкоин-карты: как мгновенно дать близким доступ к деньгам","Гани Узбеков, основатель и CEO, S1LKPAY"],
+  ["17:34",8,"Безопасность бирж виртуальных активов: опыт регулируемой экосистемы Гонконга","Д-р Джеки Нг, CISO, EX.IO (Hong Kong)"],
+  ["17:42",30,"Дискуссионный блок","",2]]},
+ {h:"306",n:"Сессия 4А",t:"Стартапы — новые ускорители цифровой экономики. Смарт-сити как площадка стартап-проектов",at:"16:49",m:"Равшан Курбанов, инвестиционный директор, FiftyFive Group; основатель Tajikistan Venture Capital",s:[
+  ["16:54",8,"Проекты ГУП «Умный город» для устойчивого цифрового развития","Саади Самадзод, директор, ГУП «Умный город» (Smart City), Душанбе"],
+  ["17:02",8,"Стартапы в цифровой экономике: от ИИ и машинного обучения до IoT","Диана Салехова, управляющий партнёр, it-hub Terricon Valley"],
+  ["17:10",8,"Возможности привлечения инвестиций стартапам Таджикистана","Исфандиёр Абдулло, директор, Accelerate Prosperity Tajikistan"],
+  ["17:18",8,"Стартапы в эпоху ИИ: новые возможности и старые правила бизнеса","Масрур Ишанов, директор, Technohub Dushanbe"],
+  ["17:26",8,"IT Park Dushanbe — платформа цифровой экономики, инноваций и IT-предпринимательства","Фарангис Солихова, руководитель отдела регистрации и поддержки резидентов, IT Park Душанбе"],
+  ["17:34",8,"Венчурные инвестиции в Республике Таджикистан","Равшан Курбанов, инвестиционный директор, FiftyFive Group"],
+  ["17:42",30,"Дискуссионный блок","",2]]},
+ {h:"all",s:[["18:12",5,"Заключительное слово",""],["18:17",0,"Окончание Форума","",1]]}
+];
+const HN={"305":"Зал 305","306":"Зал 306","all":"Общая программа"};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const mins=t=>{const[a,b]=t.split(":");return+a*60+ +b};
+const fmt=m=>Math.floor(m/60)+":"+String(m%60).padStart(2,"0");
+const T=[];S.forEach((g,gi)=>g.s.forEach((r,ri)=>T.push({id:gi+"-"+ri,g,gi,t:r[0],st:mins(r[0]),d:r[1],ti:r[2],sp:r[3],k:r[4]||0})));
+const tg=window.Telegram&&Telegram.WebApp;
+const inTg=!!(tg&&tg.initData);
+if(inTg){try{tg.ready();tg.expand();tg.setHeaderColor&&tg.setHeaderColor("#2B3BFF");document.documentElement.dataset.theme=tg.colorScheme==="dark"?"dark":"light";tg.onEvent&&tg.onEvent("themeChanged",()=>{document.documentElement.dataset.theme=tg.colorScheme})}catch(e){}}
+const buzz=()=>{try{tg.HapticFeedback.selectionChanged()}catch(e){}};
+let fav=new Set();
+try{fav=new Set(JSON.parse(localStorage.getItem("dt26fav")||"[]"))}catch(e){}
+const saveFav=()=>{const v=JSON.stringify([...fav]);try{localStorage.setItem("dt26fav",v)}catch(e){}try{tg.CloudStorage.setItem("fav",v)}catch(e){}};
+try{tg.CloudStorage.getItem("fav",(e,v)=>{if(!e&&v){fav=new Set(JSON.parse(v));render()}})}catch(e){}
+// Время Душанбе (UTC+5). ?now=12:40 — для проверки
+const nowMin=()=>{const q=new URLSearchParams(location.search).get("now");if(q)return{day:true,m:mins(q)};const d=new Date(Date.now()+5*3600e3);const iso=d.toISOString().slice(0,10);return{day:iso==="2026-11-26",before:iso<"2026-11-26",m:d.getUTCHours()*60+d.getUTCMinutes()}};
+let hall="all",q="",view="prog";
+const STAR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6L12 16.8 6.6 19.6l1.1-6L3.2 9.4l6.1-.8z"/></svg>';
+function state(r,n){if(!n.day)return n.before?"":"past";const e=r.st+Math.max(r.d,1);return n.m>=r.st&&n.m<e?"live":n.m>=e?"past":""}
+function row(r,n,showHall){const st=state(r,n),cls=["row",r.k?"brk":"",st].join(" ");
+ const name=r.sp?r.sp.split(/,|;/)[0]:"";const rest=r.sp?r.sp.slice(name.length).replace(/^[,;]\s*/,""):"";
+ return `<div class="${cls}" id="r${r.id}"><div class="tm">${esc(r.t)}${r.d?`<small>${r.d} мин</small>`:""}</div><div><div class="ti">${esc(r.ti)}</div>${r.sp?`<div class="sp"><b>${esc(name)}</b>${rest?", "+esc(rest):""}</div>`:""}${showHall&&r.g.h!=="all"?`<span class="hall">${esc(r.g.n)} · ${HN[r.g.h]}</span>`:""}</div>${r.k?"<span></span>":`<button class="star" data-f="${r.id}" aria-pressed="${fav.has(r.id)}" aria-label="В мой план">${STAR}</button>`}</div>`}
+function match(r){if(!q)return true;const s=(r.ti+" "+r.sp+" "+(r.g.t||"")+" "+(r.g.m||"")).toLowerCase();return s.includes(q)}
+function renderProg(n){let h="";S.forEach((g,gi)=>{if(hall!=="all"&&g.h!=="all"&&g.h!==hall)return;const rs=T.filter(r=>r.gi===gi&&match(r));const gm=q&&((g.t||"")+" "+(g.m||"")).toLowerCase().includes(q);if(!rs.length&&!gm)return;
+  if(g.n)h+=`<div class="sess"><div class="h"><span>${esc(g.n)} · ${HN[g.h]}</span><span>${esc(g.at)}</span></div><h2>${esc(g.t)}</h2><p>Модератор: ${esc(g.m)}</p></div>`;
+  h+=rs.map(r=>row(r,n,false)).join("")});
+ document.getElementById("list").innerHTML=h||`<div class="empty">Ничего не найдено. Попробуйте другое слово.</div>`}
+function renderFav(n){const rs=T.filter(r=>fav.has(r.id)).sort((a,b)=>a.st-b.st);const el=document.getElementById("v-fav");
+ let warn="";for(let i=1;i<rs.length;i++)if(rs[i].st<rs[i-1].st+rs[i-1].d)warn=`<div class="info"><p>Есть пересечения по времени между залами — проверьте выбор.</p></div>`;
+ el.innerHTML=rs.length?`<div class="bar" style="padding-inline:0"><b style="font:700 16px Unbounded,sans-serif">Мой план · ${rs.length}</b></div>`+warn+rs.map(r=>row(r,n,true)).join(""):`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6L12 16.8 6.6 19.6l1.1-6L3.2 9.4l6.1-.8z"/></svg><div>Отмечайте доклады звёздочкой — они соберутся здесь в личное расписание.</div></div>`}
+const SP=[];T.forEach(r=>{if(!r.sp)return;r.sp.split(";").forEach(p=>{p=p.trim();const nm=p.split(",")[0].trim();let o=SP.find(x=>x.n===nm);if(!o)SP.push(o={n:nm,r:p.slice(nm.length).replace(/^,\s*/,""),t:[]});o.t.push(r)})});
+S.forEach((g,gi)=>{if(!g.m)return;const nm=g.m.split(",")[0].trim();let o=SP.find(x=>x.n===nm);if(!o)SP.push(o={n:nm,r:g.m.slice(nm.length).replace(/^,\s*/,""),t:[]});o.mod=gi});
+SP.sort((a,b)=>a.n.localeCompare(b.n,"ru"));
+function renderSpk(){const qq=(document.getElementById("qs").value||"").toLowerCase();
+ document.getElementById("spklist").innerHTML=SP.filter(s=>(s.n+" "+s.r).toLowerCase().includes(qq)).map(s=>{const ini=s.n.split(" ").filter(w=>/^[А-ЯA-ZЁ]/.test(w)&&w!=="Д-р").slice(0,2).map(w=>w[0]).join("");const first=s.t[0];
+  const when=[...s.t.map(r=>r.t+" · "+HN[r.g.h]),...(s.mod!=null?["модератор, "+S[s.mod].n]:[])].join(" · ");
+  return `<button class="spk" data-go="${first?first.id:""}" data-mod="${s.mod??""}"><span class="av">${esc(ini)}</span><span><b>${esc(s.n)}</b><div class="r">${esc(s.r)}</div><div class="r" style="color:var(--blue2);font-weight:600">${esc(when)}</div></span></button>`}).join("")}
+function renderNow(n){const el=document.getElementById("now");
+ if(!n.day){el.className="now on";el.innerHTML=n.before?`<div class="lab" style="color:var(--blue2)">Скоро</div><div class="t">Форум пройдёт 26 ноября. Регистрация с 8:00.</div>`:`<div class="lab" style="color:var(--mute)">Форум завершён</div><div class="s">Спасибо, что были с нами. Программа остаётся доступной.</div>`;return}
+ const live=T.filter(r=>state(r,n)==="live"&&!(r.k===1&&r.d<1));const next=T.filter(r=>r.st>n.m&&!r.k).sort((a,b)=>a.st-b.st);
+ const nx=next.length?next.filter(r=>r.st===next[0].st):[];
+ el.className="now on";el.innerHTML=(live.length?live.map(r=>`<div class="lab"><i></i>Сейчас · ${HN[r.g.h]}</div><div class="t">${esc(r.ti)}</div>${r.sp?`<div class="s">${esc(r.sp.split(",")[0])}</div>`:""}`).join('<div style="height:10px"></div>'):`<div class="lab" style="color:var(--mute)">Сейчас — пауза</div>`)+(nx.length?`<div class="nx">Далее в <b>${esc(nx[0].t)}</b> · ${nx.length>1?nx.length+" доклада в двух залах":esc(nx[0].ti)}</div>`:"")}
+function stats(){const talks=T.filter(r=>r.sp&&r.ti!=="Приветственное слово"&&!r.k).length;document.getElementById("stats").innerHTML=`<div><b>${S.filter(g=>g.n).length}</b><span>сессий</span></div><div><b>${talks}</b><span>докладов</span></div><div><b>${SP.length}</b><span>спикеров</span></div>`}
+function render(){const n=nowMin();renderNow(n);document.getElementById("now").hidden=view!=="prog";if(view==="prog")renderProg(n);if(view==="fav")renderFav(n);if(view==="spk")renderSpk()}
+function go(v){view=v;["prog","fav","spk","info"].forEach(x=>document.getElementById("v-"+x).hidden=x!==v);document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-current",b.dataset.v===v));render();window.scrollTo(0,0)}
+document.querySelector("nav").addEventListener("click",e=>{const b=e.target.closest("button");if(b){buzz();go(b.dataset.v)}});
+document.getElementById("halls").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;hall=b.dataset.h;document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",c===b));buzz();render()});
+document.getElementById("q").addEventListener("input",e=>{q=e.target.value.trim().toLowerCase();render()});
+document.getElementById("qs").addEventListener("input",renderSpk);
+document.body.addEventListener("click",e=>{const f=e.target.closest("[data-f]");if(f){const id=f.dataset.f;fav.has(id)?fav.delete(id):fav.add(id);saveFav();try{tg.HapticFeedback.impactOccurred("light")}catch(x){}f.setAttribute("aria-pressed",fav.has(id));if(view==="fav")render();return}
+ const s=e.target.closest(".spk");if(s){hall="all";q="";document.getElementById("q").value="";document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.h==="all"));go("prog");const id=s.dataset.go;const el=id?document.getElementById("r"+id):[...document.querySelectorAll(".sess")][S.slice(0,+s.dataset.mod).filter(g=>g.n).length];if(el){el.scrollIntoView({block:"center"});el.classList.add("hl");setTimeout(()=>el.classList.remove("hl"),1700)}}});
+document.getElementById("share").addEventListener("click",()=>{const u="https://t.me/share/url?url="+encodeURIComponent(location.href.split("?")[0])+"&text="+encodeURIComponent("Программа Digital Tajikistan 2026 — 26 ноября, Душанбе");try{tg.openTelegramLink(u)}catch(e){window.open(u,"_blank")}});
+document.getElementById("map").addEventListener("click",e=>{try{if(inTg&&tg.openLink){e.preventDefault();tg.openLink(e.currentTarget.href)}}catch(x){}});
+stats();render();setInterval(render,60000);
+}
+</script>
+</body>
+</html>
